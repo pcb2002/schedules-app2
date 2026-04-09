@@ -89,12 +89,12 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void delete(Long scheduleId) {
-        boolean existence = scheduleRepository.existsById(scheduleId);
-        if (!existence) {
-            throw new IllegalArgumentException("Schedule with id " + scheduleId + " not found");
+    public void delete(Long scheduleId, DeleteScheduleRequest request) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalArgumentException("Schedule with id " + scheduleId + " not found")
+        );
+        if (request.getPassword().equals(schedule.getPassword())) {
+            scheduleRepository.delete(schedule);
         }
-
-        scheduleRepository.deleteById(scheduleId);
     }
 }
