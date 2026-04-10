@@ -26,8 +26,23 @@ public class CommentService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND));
 
+        // 댓글 검증
         if (schedule.getComments().size() >= 10) {
             throw new CustomException(ErrorCode.COMMENT_LIMIT_EXCEEDED);
+        }
+        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_COMMENT_EMPTY);
+        }
+        if (request.getContent().length() > 100) {
+            throw new CustomException(ErrorCode.INVALID_COMMENT_LENGTH);
+        }
+
+        // 작성자 및 비밀번호 필수값 검증
+        if (request.getAuthor() == null || request.getAuthor().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.AUTHOR_REQUIRED);
+        }
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.PASSWORD_REQUIRED);
         }
 
         Comment comment = new Comment(

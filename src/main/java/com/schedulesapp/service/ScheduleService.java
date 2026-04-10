@@ -21,6 +21,30 @@ public class ScheduleService {
 
     @Transactional
     public ScheduleCreateResponse saveSchedule(ScheduleCreateRequest request) {
+        // 제목 검증
+        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_TITLE_EMPTY);
+        }
+        if (request.getTitle().length() > 30) {
+            throw new CustomException(ErrorCode.INVALID_TITLE_LENGTH);
+        }
+
+        // 내용 검증
+        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_CONTENT_EMPTY);
+        }
+        if (request.getContent().length() > 200) {
+            throw new CustomException(ErrorCode.INVALID_CONTENT_LENGTH);
+        }
+
+        // 작성자 및 비밀번호 필수값 검증
+        if (request.getAuthor() == null || request.getAuthor().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.AUTHOR_REQUIRED);
+        }
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.PASSWORD_REQUIRED);
+        }
+
         Schedule schedule = new Schedule(
                 request.getTitle(),
                 request.getContent(),
@@ -100,7 +124,20 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
+        // 제목 검증
+        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_TITLE_EMPTY);
+        }
+        if (request.getTitle().length() > 30) {
+            throw new CustomException(ErrorCode.INVALID_TITLE_LENGTH);
+        }
+        // 작성자 검증
+        if (request.getAuthor() == null || request.getAuthor().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.AUTHOR_REQUIRED);
+        }
+        // 비밀번호 검증
         schedule.checkPassword(request.getPassword());
+
         schedule.update(
                 request.getTitle(),
                 request.getAuthor()

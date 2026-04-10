@@ -43,6 +43,9 @@ public class Schedule extends BaseEntity{
     }
 
     public void checkPassword(String inputPassword) {
+        if (inputPassword == null || inputPassword.trim().isEmpty()) {
+            throw new CustomException(ErrorCode.PASSWORD_REQUIRED);
+        }
         if (!this.password.equals(inputPassword)) {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
