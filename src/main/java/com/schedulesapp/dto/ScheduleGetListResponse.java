@@ -1,13 +1,14 @@
 package com.schedulesapp.dto;
 
 import lombok.Getter;
+
 import java.util.List;
 
 @Getter
 public class ScheduleGetListResponse {
-    private List<ScheduleGetResponse> schedules;
+    private List<ScheduleGetAllResponse> schedules;
 
-    public ScheduleGetListResponse(List<ScheduleGetResponse> schedules) {
+    public ScheduleGetListResponse(List<ScheduleGetAllResponse> schedules) {
         this.schedules = schedules;
     }
 }

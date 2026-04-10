@@ -1,11 +1,13 @@
 package com.schedulesapp.service;
 
 import com.schedulesapp.dto.*;
+import com.schedulesapp.entity.Comment;
 import com.schedulesapp.entity.Schedule;
 import com.schedulesapp.exception.CustomException;
 import com.schedulesapp.exception.ErrorCode;
 import com.schedulesapp.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,15 +40,18 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public ScheduleGetListResponse getAllSchedule() {
-        List<Schedule> schedules = scheduleRepository.findAll();
-        List<ScheduleGetResponse> dtos = new ArrayList<>();
+        List<Schedule> schedules = scheduleRepository.findAll(
+                Sort.by(Sort.Direction.DESC, "updatedAt")
+        );
+        List<ScheduleGetAllResponse> dtos = new ArrayList<>();
 
-//      List<ScheduleGetResponse> dtos = schedules.stream()
-//            .map(ScheduleGetResponse::new)
+        // for문과 동일한 기능.
+//      List<ScheduleGetAllResponse> dtos = schedules.stream()
+//            .map(ScheduleGetAllResponse::new)
 //            .toList();
 
         for (Schedule schedule : schedules) {
-            ScheduleGetResponse dto = new ScheduleGetResponse(
+            ScheduleGetAllResponse dto = new ScheduleGetAllResponse(
                     schedule.getId(),
                     schedule.getTitle(),
                     schedule.getContent(),
@@ -64,13 +69,29 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
+
+        List<CommentGetResponse> dtos = new ArrayList<>();
+
+        for(Comment comment : schedule.getComments()) {
+            CommentGetResponse dto = new CommentGetResponse(
+                    comment.getId(),
+                    comment.getSchedule().getId(),
+                    comment.getContent(),
+                    comment.getAuthor(),
+                    comment.getCreatedAt(),
+                    comment.getUpdatedAt()
+            );
+            dtos.add(dto);
+        }
+
         return new ScheduleGetResponse(
                 schedule.getId(),
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getAuthor(),
                 schedule.getCreatedAt(),
-                schedule.getUpdatedAt()
+                schedule.getUpdatedAt(),
+                dtos
         );
     }
 
