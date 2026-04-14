@@ -6,9 +6,9 @@ import java.util.List;
 
 @Getter
 public class ScheduleGetListResponse {
-    private List<ScheduleGetAllResponse> schedules;
+    private List<ScheduleGetOneResponse> schedules;
 
-    public ScheduleGetListResponse(List<ScheduleGetAllResponse> schedules) {
+    public ScheduleGetListResponse(List<ScheduleGetOneResponse> schedules) {
         this.schedules = schedules;
     }
 }

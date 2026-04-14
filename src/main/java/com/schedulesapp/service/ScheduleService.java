@@ -67,7 +67,7 @@ public class ScheduleService {
         List<Schedule> schedules = scheduleRepository.findAll(
                 Sort.by(Sort.Direction.DESC, "updatedAt")
         );
-        List<ScheduleGetAllResponse> dtos = new ArrayList<>();
+        List<ScheduleGetOneResponse> dtos = new ArrayList<>();
 
         // for문과 동일한 기능.
 //      List<ScheduleGetAllResponse> dtos = schedules.stream()
@@ -75,7 +75,7 @@ public class ScheduleService {
 //            .toList();
 
         for (Schedule schedule : schedules) {
-            ScheduleGetAllResponse dto = new ScheduleGetAllResponse(
+            ScheduleGetOneResponse dto = new ScheduleGetOneResponse(
                     schedule.getId(),
                     schedule.getTitle(),
                     schedule.getContent(),
@@ -89,7 +89,7 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public ScheduleGetResponse getOneSchedule(Long scheduleId) {
+    public ScheduleGetDetailsResponse getOneSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
@@ -108,7 +108,7 @@ public class ScheduleService {
             dtos.add(dto);
         }
 
-        return new ScheduleGetResponse(
+        return new ScheduleGetDetailsResponse(
                 schedule.getId(),
                 schedule.getTitle(),
                 schedule.getContent(),
