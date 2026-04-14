@@ -22,8 +22,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public CommentCreateResponse saveComment(Long scheduleId, CommentCreateRequest request) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
+    public CommentCreateResponse saveComment(CommentCreateRequest request) {
+        Schedule schedule = scheduleRepository.findById(request.getScheduleId())
                 .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         // 댓글 검증

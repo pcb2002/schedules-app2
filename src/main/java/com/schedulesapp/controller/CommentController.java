@@ -10,15 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/schedules/{scheduleId}/comments")
+@RequestMapping("/comments")
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<CommentCreateResponse> createComment (
-            @PathVariable Long scheduleId, @RequestBody CommentCreateRequest request) {
+    public ResponseEntity<CommentCreateResponse> createComment (@RequestBody CommentCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(commentService.saveComment(scheduleId, request));
+                .body(commentService.saveComment(request));
     }
 }
