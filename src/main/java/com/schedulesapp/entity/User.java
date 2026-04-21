@@ -34,12 +34,4 @@ public class User extends BaseEntity{
         this.email = email;
     }
 
-    public void checkPassword(String inputPassword) {
-        if (inputPassword == null || inputPassword.trim().isEmpty()) {
-            throw new CustomException(ErrorCode.PASSWORD_REQUIRED);
-        }
-        if (!this.password.equals(inputPassword)) {
-            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
-        }
-    }
 }

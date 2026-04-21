@@ -1,5 +1,6 @@
 package com.schedulesapp.service;
 
+import com.schedulesapp.config.PasswordEncoder;
 import com.schedulesapp.dto.*;
 import com.schedulesapp.entity.User;
 import com.schedulesapp.exception.CustomException;
@@ -16,24 +17,30 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public LoginResponse login(@Valid LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        user.checkPassword(request.getPassword());
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
+        }
 
         return new  LoginResponse(user.getId(), user.getEmail());
     }
 
     @Transactional
-    public UserCreateResponse saveUser(UserCreateRequest request) {
+    public UserCreateResponse signup(UserCreateRequest request) {
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
         User savedUser = userRepository.save(new User (
                 request.getUsername(),
                 request.getEmail(),
-                request.getPassword()
+                encodedPassword
         ));
         return new UserCreateResponse(
                 savedUser.getId(),
@@ -96,7 +103,10 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        user.checkPassword(request.getPassword());
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
         userRepository.delete(user);
     }
 }

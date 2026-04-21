@@ -1,4 +1,4 @@
-package com.schedulesapp.web;
+package com.schedulesapp.config;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

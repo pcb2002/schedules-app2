@@ -47,7 +47,7 @@ public class UserController {
     public ResponseEntity<UserCreateResponse> createUser(
             @Valid @RequestBody UserCreateRequest request
     ) {
-        UserCreateResponse result = userService.saveUser(request);
+        UserCreateResponse result = userService.signup(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
