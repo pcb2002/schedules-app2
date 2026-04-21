@@ -34,15 +34,15 @@
 ```
 
 * **Response (201 Created):**
-    ```json
-    {
-      "id": 1,
-      "username": "홍길동",
-      "email": "test@test.com",
-      "createdAt": "2026-04-21T10:00:00",
-      "updatedAt": "2026-04-21T10:00:00"
-    }
-    ```
+```json
+{
+  "id": 1,
+  "username": "홍길동",
+  "email": "test@test.com",
+  "createdAt": "2026-04-21T10:00:00",
+  "updatedAt": "2026-04-21T10:00:00"
+}
+```
 
 ---
 

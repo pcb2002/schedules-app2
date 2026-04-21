@@ -37,14 +37,6 @@ public class ScheduleService {
             throw new CustomException(ErrorCode.INVALID_CONTENT_LENGTH);
         }
 
-        // 작성자 및 비밀번호 필수값 검증
-        if (request.getAuthor() == null || request.getAuthor().trim().isEmpty()) {
-            throw new CustomException(ErrorCode.AUTHOR_REQUIRED);
-        }
-        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
-            throw new CustomException(ErrorCode.PASSWORD_REQUIRED);
-        }
-
         Schedule schedule = new Schedule(
                 request.getTitle(),
                 request.getContent(),
@@ -56,7 +48,6 @@ public class ScheduleService {
                 saved.getId(),
                 saved.getTitle(),
                 saved.getContent(),
-                saved.getAuthor(),
                 saved.getCreatedAt(),
                 saved.getUpdatedAt()
         );
@@ -79,7 +70,6 @@ public class ScheduleService {
                     schedule.getId(),
                     schedule.getTitle(),
                     schedule.getContent(),
-                    schedule.getAuthor(),
                     schedule.getCreatedAt(),
                     schedule.getUpdatedAt()
             );
@@ -157,7 +147,6 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
-        schedule.checkPassword(request.getPassword());
         scheduleRepository.delete(schedule);
     }
 }

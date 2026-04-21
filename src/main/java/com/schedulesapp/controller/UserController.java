@@ -47,17 +47,25 @@ public class UserController {
     public ResponseEntity<UserCreateResponse> createUser(
             @RequestBody UserCreateRequest request
     ) {
-        UserCreateResponse result = userService.createUser(request);
+        UserCreateResponse result = userService.saveUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserGetResponse>> getUsers() {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findAllUser());
+    public ResponseEntity<List<UserGetResponse>> getAllUser() {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUser());
     }
 
-    @PutMapping("/users/{userId}")
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<UserGetResponse> getOneUser(
+            @PathVariable Long userId
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getOneUser(userId));
+    }
+
+    @PatchMapping("/users/{userId}")
     public ResponseEntity<UserUpdateResponse> updateUser(
+            @PathVariable Long userId,
             @RequestBody UserUpdateRequest request,
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser // 1. 세션을 파라미터로 받습니다.
     ) {
