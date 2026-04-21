@@ -9,11 +9,12 @@
 
 ---
 
-### 1. 인증 및 유저 (User) API
+## 1. 인증 및 유저 (User) API
 
-**1-1. 회원가입 (Lv 2, Lv 3, Lv 6)**
+### 1-1. 회원가입 (Lv 2, Lv 3, Lv 6)
+
 새로운 유저를 등록한다. 비밀번호는 서버 내에서 BCrypt로 암호화되어 저장된다.
-* **URL:** `/users/signup`
+* **URL:** `/users`
 * **Method:** `POST`
 * **Request Body:**
 
@@ -22,6 +23,15 @@
 | `username` | String | O | 필수값, 최대 4자 이내 | 유저명 |
 | `email` | String | O | 필수값, 올바른 이메일 형식 | 이메일 |
 | `password` | String | O | 필수값, 8글자 이상 | 비밀번호 |
+
+```json
+// 요청 예시
+{
+  "username": "홍길동",
+  "email": "test@test.com",
+  "password": "password123!"
+}
+```
 
 * **Response (201 Created):**
     ```json
@@ -34,7 +44,215 @@
     }
     ```
 
-**1-2. 로그인 (Lv 4)**
+---
+
+
+### 1-2. 유저 전체 조회 (Lv 2)
+
+서비스에 가입된 모든 유저의 목록을 조회한다. 응답 시 비밀번호와 같은 민감한 정보는 제외된다.
+
+- **URL:** `/users`
+- **Method:** `GET`
+- **Request Header:** `Cookie: JSESSIONID=...` (로그인 세션 쿠키 필요)
+
+- **Response (200 OK)**
+
+```json
+[
+  {
+    "id": 1,
+    "username": "홍길동",
+    "email": "test1@test.com",
+    "createdAt": "2026-04-21T10:00:00",
+    "updatedAt": "2026-04-21T10:00:00"
+  },
+  {
+    "id": 2,
+    "username": "김철수",
+    "email": "test2@test.com",
+    "createdAt": "2026-04-21T11:30:00",
+    "updatedAt": "2026-04-21T11:30:00"
+  }
+]
+```
+
+- **Response (401 Unauthorized)**
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "로그인이 필요한 서비스입니다."
+}
+```
+
+---
+
+
+### 1-3. 유저 단건 조회 (Lv 2)
+선택한 특정 유저의 상세 정보를 조회한다.
+
+- **URL:** `/users/{userId}`
+- **Method:** `GET`
+- **Request Header:** `Cookie: JSESSIONID=...` (로그인 세션 쿠키 필요)
+- **Path Variable:**
+  - `userId` (Long) : 조회할 유저의 고유 ID
+
+- **Response (200 OK)**
+
+```json
+{
+  "id": 1,
+  "username": "홍길동",
+  "email": "test1@test.com",
+  "createdAt": "2026-04-21T10:00:00",
+  "updatedAt": "2026-04-21T10:00:00"
+}
+```
+
+- **Response (401 Unauthorized)**
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "로그인이 필요한 서비스입니다."
+}
+```
+
+- **Response (404 Not Found)**
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "해당 유저를 찾을 수 없습니다."
+}
+```
+
+---
+
+
+### 1-4. 유저 정보 수정 (Lv 2)
+로그인한 유저 본인의 정보(유저명, 이메일 등)를 수정합니다. 세션을 통해 현재 로그인한 사용자와 수정하려는 대상(`userId`)이 일치하는지 권한(인가)을 확인합니다.
+
+- **URL:** `/users/{userId}`
+- **Method:** `PATCH`
+- **Request Header:** `Cookie: JSESSIONID=...` (로그인 세션 쿠키 필요)
+- **Path Variable:**
+  - `userId` (Long) : 수정할 유저의 고유 ID
+
+- **Request Body (JSON)**
+
+| 필드명 | 타입 | 필수여부 | 제약조건 (Validation) | 설명 |
+| --- | --- | --- | --- | --- |
+| `username` | String | O | 필수값, 최대 4자 이내 | 변경할 유저명 |
+| `email` | String | X | 올바른 이메일 형식 | 변경할 이메일 (선택) |
+
+```json
+// 요청 예시
+{
+  "username": "고길동",
+  "email": "new_email@test.com"
+}
+```
+
+- **Response (200 OK)**
+
+```json
+// 응답 예시 (수정된 데이터 반환, updatedAt 변경됨)
+{
+  "id": 1,
+  "username": "고길동",
+  "email": "new_email@test.com",
+  "createdAt": "2026-04-21T10:00:00",
+  "updatedAt": "2026-04-21T15:30:00"
+}
+```
+
+- **Response (400 Bad Request)**
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "유저명은 4글자 이내여야 합니다."
+}
+```
+
+- **Response (401 Unauthorized)**
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "로그인이 필요한 서비스입니다."
+}
+```
+
+- **Response (404 Not Found)**
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "해당 유저를 찾을 수 없습니다."
+}
+```
+
+---
+
+
+### 1-5. 유저 탈퇴 (삭제) (Lv 2)
+로그인한 유저 본인의 계정을 삭제(탈퇴)합니다. 세션을 통해 본인 여부를 확인하고, 보안을 위해 비밀번호를 한 번 더 검증합니다. 유저가 삭제될 때 해당 유저가 작성한 일정과 댓글도 함께 처리(Cascade 또는 서비스 계층 삭제)되어야 합니다.
+
+- **URL:** `/users/{userId}`
+- **Method:** `DELETE`
+- **Request Header:** `Cookie: JSESSIONID=...` (로그인 세션 쿠키 필요)
+- **Path Variable:**
+  - `userId` (Long) : 삭제할 유저의 고유 ID
+
+- **Request Body (JSON)**
+
+| 필드명 | 타입 | 필수여부 | 제약조건 (Validation) | 설명 |
+| --- | --- | --- | --- | --- |
+| `password` | String | O | 필수값 | 본인 확인용(재확인) 비밀번호 |
+
+```json
+// 요청 예시
+{
+  "password": "password123!"
+}
+```
+
+- **Response (204 No Content)**
+  - 본문 없이 상태 코드 `204`만 반환 (성공적으로 삭제됨)
+
+- **Response (400 Bad Request)**
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "비밀번호는 필수 입력값입니다."
+}
+```
+
+- **Response (401 Unauthorized)**
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "로그인이 필요한 서비스이거나 비밀번호가 일치하지 않습니다."
+}
+```
+
+- **Response (404 Not Found)**
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "해당 유저를 찾을 수 없습니다."
+}
+```
+
+---
+
+
+### 1-6. 로그인 (Lv 4)
 이메일과 비밀번호를 검증하고 세션을 생성한다.
 * **URL:** `/users/login`
 * **Method:** `POST`
@@ -54,7 +272,9 @@
     }
     ```
 
-**1-3. 로그아웃 (Lv 4)**
+---
+
+### 1-7. 로그아웃 (Lv 4)
 현재 로그인된 유저의 세션을 만료시킨다.
 * **URL:** `/users/logout`
 * **Method:** `POST`
