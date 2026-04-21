@@ -23,31 +23,19 @@ public class Schedule extends BaseEntity{
     private String title;
     @Column(length = 200, nullable = false)
     private String content;
-    private String author;
-    private String password;
 
-    // orphanRemoval = true: 일정이 삭제되면 연관된 댓글도 고아가 되어 함께 삭제됨
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "userId")
+    private User user;
 
-    public Schedule(String title, String content, String author, String password) {
+    public Schedule(String title, String content) {
         this.title = title;
         this.content = content;
-        this.author = author;
-        this.password = password;
     }
 
-    public void update(String title, String author) {
+    public void update(String title, String content) {
         this.title = title;
-        this.author = author;
+        this.content = content;
     }
 
-    public void checkPassword(String inputPassword) {
-        if (inputPassword == null || inputPassword.trim().isEmpty()) {
-            throw new CustomException(ErrorCode.PASSWORD_REQUIRED);
-        }
-        if (!this.password.equals(inputPassword)) {
-            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
-        }
-    }
 }

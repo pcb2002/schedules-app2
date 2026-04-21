@@ -1,4 +1,45 @@
 package com.schedulesapp.entity;
 
-public class User {
+import com.schedulesapp.exception.CustomException;
+import com.schedulesapp.exception.ErrorCode;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Entity
+@Table(name = "users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class User extends BaseEntity{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(length = 4, nullable = false)
+    private String username;
+    @Column(nullable = false)
+    private String email;
+    @Column(length = 8, nullable = false)
+    private String password;
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
+    public void update(String username, String email) {
+        this.username = username;
+        this.email = email;
+    }
+
+    public void checkPassword(String inputPassword) {
+        if (inputPassword == null || inputPassword.trim().isEmpty()) {
+            throw new CustomException(ErrorCode.PASSWORD_REQUIRED);
+        }
+        if (!this.password.equals(inputPassword)) {
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
+        }
+    }
 }
