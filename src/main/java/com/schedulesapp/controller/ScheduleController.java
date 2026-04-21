@@ -2,6 +2,7 @@ package com.schedulesapp.controller;
 
 import com.schedulesapp.dto.*;
 import com.schedulesapp.service.ScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,30 +15,39 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<ScheduleCreateResponse> create(@RequestBody ScheduleCreateRequest request){
-        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.saveSchedule(request));
+    public ResponseEntity<ScheduleCreateResponse> createSchedule(
+            @Valid @RequestBody ScheduleCreateRequest request,
+            @SessionAttribute(name = "loginUser") SessionUser loginUser){
+        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.saveSchedule(loginUser.getId(), request));
     }
 
     @GetMapping
-    public ResponseEntity<ScheduleGetListResponse> getAll() {
+    public ResponseEntity<ScheduleGetListResponse> getAllSchedule() {
         return  ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAllSchedule());
     }
 
     @GetMapping("/{scheduleId}")
-    public ResponseEntity<ScheduleGetDetailsResponse> getOne(@PathVariable Long scheduleId){
-        return  ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOneSchedule(scheduleId));
+    public ResponseEntity<ScheduleGetDetailsResponse> getOneSchedule(
+            @PathVariable Long scheduleId,
+            @SessionAttribute(name = "loginUser") SessionUser loginUser){
+        return  ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOneSchedule(
+                loginUser.getId(), scheduleId));
     }
 
     @PutMapping("/{scheduleId}")
-    public ResponseEntity<ScheduleUpdateResponse> update(
-            @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequest request){
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.updateSchedule(scheduleId, request));
+    public ResponseEntity<ScheduleUpdateResponse> updateSchedule(
+            @PathVariable Long scheduleId,
+            @Valid @RequestBody ScheduleUpdateRequest request,
+            @SessionAttribute(name = "loginUser") SessionUser loginUser){
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.updateSchedule(
+                loginUser.getId(), scheduleId, request));
     }
 
     @DeleteMapping("/{scheduleId}")
-    public ResponseEntity<Void> delete(
-            @PathVariable Long scheduleId, @RequestBody ScheduleDeleteRequest request){
-        scheduleService.deleteSchedule(scheduleId, request);
+    public ResponseEntity<Void> deleteSchedule(
+            @PathVariable Long scheduleId,
+            @SessionAttribute(name = "loginUser") SessionUser loginUser){
+        scheduleService.deleteSchedule(loginUser.getId(), scheduleId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

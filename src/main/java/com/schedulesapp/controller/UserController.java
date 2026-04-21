@@ -33,9 +33,9 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void>  logout(
-            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionMember,
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             HttpSession session) {
-        if (sessionMember == null) {
+        if (sessionUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -43,9 +43,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/users")
+    @PostMapping("/signup")
     public ResponseEntity<UserCreateResponse> createUser(
-            @RequestBody UserCreateRequest request
+            @Valid @RequestBody UserCreateRequest request
     ) {
         UserCreateResponse result = userService.saveUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -66,21 +66,17 @@ public class UserController {
     @PatchMapping("/users/{userId}")
     public ResponseEntity<UserUpdateResponse> updateUser(
             @PathVariable Long userId,
-            @RequestBody UserUpdateRequest request,
+            @Valid @RequestBody UserUpdateRequest request,
             @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser // 1. 세션을 파라미터로 받습니다.
     ) {
-        // 2. 세션에 "loginMember" 정보가 있는지 확인합니다.
-        if (sessionUser == null) {
-            // 3. 없다면 401 Unauthorized 에러를 던집니다.
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요한 서비스입니다.");
-        }
 
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(sessionUser.getId(), request));
     }
 
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> delete(
-            @PathVariable Long userId, @RequestBody ScheduleDeleteRequest request){
+            @PathVariable Long userId,
+            @Valid @RequestBody UserDeleteRequest request){
         userService.deleteUser(userId, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

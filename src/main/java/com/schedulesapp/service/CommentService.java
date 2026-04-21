@@ -5,10 +5,12 @@ import com.schedulesapp.dto.CommentCreateRequest;
 import com.schedulesapp.dto.CommentCreateResponse;
 import com.schedulesapp.entity.Comment;
 import com.schedulesapp.entity.Schedule;
+import com.schedulesapp.entity.User;
 import com.schedulesapp.exception.CustomException;
 import com.schedulesapp.exception.ErrorCode;
 import com.schedulesapp.repository.CommentRepository;
 import com.schedulesapp.repository.ScheduleRepository;
+import com.schedulesapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,44 +22,40 @@ public class CommentService {
 
     private final ScheduleRepository scheduleRepository;
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository; // 유저 정보 조회를 위해 추가
 
     @Transactional
-    public CommentCreateResponse saveComment(CommentCreateRequest request) {
-        Schedule schedule = scheduleRepository.findById(request.getScheduleId())
-                .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND));
+    public CommentCreateResponse saveComment(Long scheduleId, Long userId, CommentCreateRequest request) {
 
-        // 댓글 검증
-        if (schedule.getComments().size() >= 10) {
+        // 1. 스케줄 존재 여부 확인
+        Schedule schedule = scheduleRepository.findByIdAndUserId(scheduleId, userId).orElseThrow(
+                () -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND));
+
+        // 2. 유저 존재 여부 확인 (세션에서 가져온 ID로 실제 유저 객체를 찾습니다)
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 3. 댓글 개수 검증 (단방향 해결책: Repository의 count 메서드 활용)
+        long commentCount = commentRepository.countByScheduleId(scheduleId);
+        if (commentCount >= 10) {
             throw new CustomException(ErrorCode.COMMENT_LIMIT_EXCEEDED);
         }
-        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_COMMENT_EMPTY);
-        }
-        if (request.getContent().length() > 100) {
-            throw new CustomException(ErrorCode.INVALID_COMMENT_LENGTH);
-        }
 
-        // 작성자 및 비밀번호 필수값 검증
-        if (request.getAuthor() == null || request.getAuthor().trim().isEmpty()) {
-            throw new CustomException(ErrorCode.AUTHOR_REQUIRED);
-        }
-        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
-            throw new CustomException(ErrorCode.PASSWORD_REQUIRED);
-        }
-
+        // 4. 댓글 생성
         Comment comment = new Comment(
                 request.getContent(),
-                request.getAuthor(),
-                request.getPassword(),
-                schedule
+                schedule,
+                user
         );
 
         Comment saved = commentRepository.save(comment);
+
+        // 5. 응답 반환
         return new CommentCreateResponse(
                 saved.getId(),
                 saved.getSchedule().getId(),
+                saved.getUser().getId(),
                 saved.getContent(),
-                saved.getAuthor(),
                 saved.getCreatedAt(),
                 saved.getUpdatedAt()
         );

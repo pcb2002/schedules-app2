@@ -8,17 +8,17 @@ import java.time.LocalDateTime;
 public class CommentCreateResponse {
     private final Long id;
     private final Long scheduleId;
+    private final Long userId;
     private final String content;
-    private final String author;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public CommentCreateResponse(Long id, Long scheduleId, String content, String author,
+    public CommentCreateResponse(Long id, Long scheduleId, Long userId, String content,
                                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.scheduleId = scheduleId;
+        this.userId = userId;
         this.content = content;
-        this.author = author;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
