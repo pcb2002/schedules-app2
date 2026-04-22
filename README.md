@@ -1,3 +1,4 @@
+## ERD다이어그램
 
 ![img.png](img.png)
 ---
@@ -36,6 +37,7 @@
 
 * **Response (201 Created):**
 ```json
+// 응답 예시
 {
   "id": 1,
   "username": "홍길동",
@@ -59,6 +61,7 @@
 - **Response (200 OK)**
 
 ```json
+// 응답 예시
 [
   {
     "id": 1,
@@ -77,15 +80,6 @@
 ]
 ```
 
-- **Response (401 Unauthorized)**
-```json
-{
-  "status": 401,
-  "error": "Unauthorized",
-  "message": "로그인이 필요한 서비스입니다."
-}
-```
-
 ---
 
 
@@ -101,30 +95,13 @@
 - **Response (200 OK)**
 
 ```json
+// 응답 예시
 {
   "id": 1,
   "username": "홍길동",
   "email": "test1@test.com",
   "createdAt": "2026-04-21T10:00:00",
   "updatedAt": "2026-04-21T10:00:00"
-}
-```
-
-- **Response (401 Unauthorized)**
-```json
-{
-  "status": 401,
-  "error": "Unauthorized",
-  "message": "로그인이 필요한 서비스입니다."
-}
-```
-
-- **Response (404 Not Found)**
-```json
-{
-  "status": 404,
-  "error": "Not Found",
-  "message": "해당 유저를 찾을 수 없습니다."
 }
 ```
 
@@ -158,40 +135,13 @@
 - **Response (200 OK)**
 
 ```json
-// 응답 예시 (수정된 데이터 반환, updatedAt 변경됨)
+// 응답 예시
 {
   "id": 1,
   "username": "고길동",
   "email": "new_email@test.com",
   "createdAt": "2026-04-21T10:00:00",
   "updatedAt": "2026-04-21T15:30:00"
-}
-```
-
-- **Response (400 Bad Request)**
-```json
-{
-  "status": 400,
-  "error": "Bad Request",
-  "message": "유저명은 4글자 이내여야 합니다."
-}
-```
-
-- **Response (401 Unauthorized)**
-```json
-{
-  "status": 401,
-  "error": "Unauthorized",
-  "message": "로그인이 필요한 서비스입니다."
-}
-```
-
-- **Response (404 Not Found)**
-```json
-{
-  "status": 404,
-  "error": "Not Found",
-  "message": "해당 유저를 찾을 수 없습니다."
 }
 ```
 
@@ -223,33 +173,6 @@
 - **Response (204 No Content)**
   - 본문 없이 상태 코드 `204`만 반환 (성공적으로 삭제됨)
 
-- **Response (400 Bad Request)**
-```json
-{
-  "status": 400,
-  "error": "Bad Request",
-  "message": "비밀번호는 필수 입력값입니다."
-}
-```
-
-- **Response (401 Unauthorized)**
-```json
-{
-  "status": 401,
-  "error": "Unauthorized",
-  "message": "로그인이 필요한 서비스이거나 비밀번호가 일치하지 않습니다."
-}
-```
-
-- **Response (404 Not Found)**
-```json
-{
-  "status": 404,
-  "error": "Not Found",
-  "message": "해당 유저를 찾을 수 없습니다."
-}
-```
-
 ---
 
 
@@ -267,6 +190,7 @@
 * **Response (200 OK):**
   성공 시 `JSESSIONID` 쿠키가 발급된다.
     ```json
+  // 응답 예시
     {
       "id": 1,
       "email": "test@test.com"
@@ -284,9 +208,9 @@
 
 ---
 
-### 2. 일정 (Schedule) API
+## 2. 일정 (Schedule) API
 
-**2-1. 일정 생성 (Lv 1, Lv 2)**
+### 2-1. 일정 생성 (Lv 1, Lv 2)
 로그인한 유저의 정보(세션)를 바탕으로 일정을 생성한다.
 * **URL:** `/schedules`
 * **Method:** `POST`
@@ -299,6 +223,7 @@
 | `content` | String | O | 필수값, 최대 200자 이내   | 할일 내용 |
 * **Response (201 Created):**
     ```json
+  // 응답 예시
     {
       "id": 1,
       "title": "스프링 과제",
@@ -309,7 +234,9 @@
     }
     ```
 
-**2-2. 일정 페이징 조회 (Lv 8)**
+---
+
+### 2-2. 일정 페이징 조회 (Lv 8)
 등록된 일정을 페이지 단위로 조회한다. 기본 페이지 크기는 10이며, 수정일 기준 내림차순 정렬된다.
 * **URL:** `/schedules`
 * **Method:** `GET`
@@ -319,6 +246,7 @@
 * **Response (200 OK):**
   Spring Data JPA의 Page 객체 구조를 따른다.
     ```json
+  // 응답 예시
     {
       "content": [
         {
@@ -339,12 +267,15 @@
     }
     ```
 
-**2-3. 일정 단건 조회 (Lv 1, Lv 7)**
+---
+
+### 2-3. 일정 단건 조회 (Lv 1, Lv 7)
 선택한 일정의 상세 정보와 연관된 댓글 목록을 함께 조회한다.
 * **URL:** `/schedules/{scheduleId}`
 * **Method:** `GET`
 * **Response (200 OK):**
     ```json
+  // 응답 예시
     {
       "id": 1,
       "title": "스프링 과제",
@@ -364,7 +295,9 @@
     }
     ```
 
-**2-4. 일정 수정 (Lv 1, Lv 4)**
+---
+
+### 2-4. 일정 수정 (Lv 1, Lv 4)
 본인이 작성한 일정만 수정할 수 있다. 세션 검증을 통해 권한을 확인한다.
 * **URL:** `/schedules/{scheduleId}`
 * **Method:** `PATCH`
@@ -378,7 +311,9 @@
 * **Response (200 OK):**
   수정된 일정 정보 반환 (updatedAt 변경됨).
 
-**2-5. 일정 삭제 (Lv 1, Lv 4)**
+---
+
+### 2-5. 일정 삭제 (Lv 1, Lv 4)
 본인이 작성한 일정만 삭제할 수 있다. 세션 검증을 통해 권한을 확인한다.
 * **URL:** `/schedules/{scheduleId}`
 * **Method:** `DELETE`
@@ -387,9 +322,9 @@
 
 ---
 
-### 3. 댓글 (Comment) API
+## 3. 댓글 (Comment) API
 
-**3-1. 댓글 생성 (Lv 7)**
+### 3-1. 댓글 생성 (Lv 7)
 특정 일정에 로그인한 유저의 명의로 댓글을 작성한다.
 * **URL:** `/schedules/{scheduleId}/comments`
 * **Method:** `POST`
@@ -402,6 +337,7 @@
 
 * **Response (201 Created):**
     ```json
+  // 응답 예시
     {
       "id": 1,
       "scheduleId": 1,
@@ -412,16 +348,20 @@
     }
     ```
 
-**3-2. 전체 댓글 조회 (Lv 7)**
+---
+
+### 3-2. 전체 댓글 조회 (Lv 7)
 특정 일정에 달린 모든 댓글을 조회한다. (일정 단건 조회와 분리하여 별도 호출이 필요한 경우 사용한다.)
 * **URL:** `/schedules/{scheduleId}/comments`
 * **Method:** `GET`
 * **Response (200 OK):**
   댓글 데이터 배열을 반환한다.
 
-새롭게 추가된 요구사항(Lv 1 ~ Lv 8)과 검증(Validation) 규칙을 모두 반영하여, API에서 발생할 수 있는 전체 에러 메시지를 상태 코드별로 정리했습니다.
+---
 
-### 🚨 400 Bad Request (입력값 검증 실패)
+## 에러 메시지 상태 코드별로 정리
+
+### 400 Bad Request (입력값 검증 실패)
 클라이언트가 필수 값을 누락했거나, 글자 수 제한 등의 규칙을 어겼을 때 반환되는 메시지입니다.
 
 **[유저 관련]**
@@ -434,8 +374,9 @@
 
 **[일정 관련]**
 * "할일 제목은 필수 입력값입니다."
-* "할일 제목은 10글자 이내여야 합니다."
+* "할일 제목은 30자 이내여야 합니다."
 * "할일 내용은 필수 입력값입니다."
+* "할일 내용은 200자 이내여야 합니다."
 
 **[댓글 관련]**
 * "댓글 내용은 필수 입력값입니다."
@@ -444,7 +385,7 @@
 
 ---
 
-### 🚫 401 Unauthorized (인증 실패)
+### 401 Unauthorized (인증 실패)
 로그인이 되어있지 않거나, 로그인 정보가 틀렸을 때 반환되는 메시지입니다.
 
 * "로그인이 필요한 서비스입니다."
@@ -452,15 +393,14 @@
 
 ---
 
-### ⛔ 403 Forbidden (권한 없음)
-로그인은 되어있으나, 남의 일정을 수정/삭제하려고 시도할 때 반환되는 메시지입니다.
+### 403 Forbidden (권한 없음)
+로그인은 되어있으나, 남의 정보, 일정을 수정/삭제하려고 시도할 때 반환되는 메시지입니다.
 
-* "본인이 작성한 일정만 수정 및 삭제할 수 있습니다."
-* "본인이 작성한 댓글만 수정 및 삭제할 수 있습니다."
+* "권한이 없습니다."
 
 ---
 
-### 🔍 404 Not Found (데이터 없음)
+### 404 Not Found (데이터 없음)
 요청한 ID에 해당하는 데이터가 데이터베이스에 존재하지 않을 때 반환되는 메시지입니다.
 
 * "해당 일정을 찾을 수 없습니다."
