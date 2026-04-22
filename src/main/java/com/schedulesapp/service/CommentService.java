@@ -3,6 +3,7 @@ package com.schedulesapp.service;
 
 import com.schedulesapp.dto.CommentCreateRequest;
 import com.schedulesapp.dto.CommentCreateResponse;
+import com.schedulesapp.dto.CommentGetResponse;
 import com.schedulesapp.entity.Comment;
 import com.schedulesapp.entity.Schedule;
 import com.schedulesapp.entity.User;
@@ -14,6 +15,9 @@ import com.schedulesapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -59,5 +63,26 @@ public class CommentService {
                 saved.getCreatedAt(),
                 saved.getUpdatedAt()
         );
+    }
+
+    @Transactional
+    public List<CommentGetResponse> getAllComment(Long scheduleId) {
+
+        List<Comment> comments = commentRepository.findByScheduleId(scheduleId);
+        List<CommentGetResponse> dtos = new ArrayList<>();
+
+        for(Comment comment : comments) {
+            CommentGetResponse dto = new CommentGetResponse(
+                    comment.getId(),
+                    comment.getSchedule().getId(),
+                    comment.getSchedule().getUser().getId(),
+                    comment.getContent(),
+                    comment.getCreatedAt(),
+                    comment.getUpdatedAt()
+            );
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
 }

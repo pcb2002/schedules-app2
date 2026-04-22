@@ -5,20 +5,20 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class ScheduleGetOneResponse {
-    private final Long id;
+public class SchedulePageResponse {
     private final String title;
     private final String content;
-    private final Long userId;
+    private final Long commentCount;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
+    private final String username;
 
-    public ScheduleGetOneResponse(Long id, String title, String content, Long userId, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
+    public SchedulePageResponse(String title, String content, Long commentCount, LocalDateTime createdAt, LocalDateTime updatedAt, String username) {
         this.title = title;
         this.content = content;
-        this.userId = userId;
+        this.commentCount = commentCount;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.username = username;
     }
 }

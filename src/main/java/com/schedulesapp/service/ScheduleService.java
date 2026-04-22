@@ -10,6 +10,8 @@ import com.schedulesapp.repository.CommentRepository;
 import com.schedulesapp.repository.ScheduleRepository;
 import com.schedulesapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,29 +48,8 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public ScheduleGetListResponse getAllSchedule() {
-        List<Schedule> schedules = scheduleRepository.findAll(
-                Sort.by(Sort.Direction.DESC, "updatedAt")
-        );
-        List<ScheduleGetOneResponse> dtos = new ArrayList<>();
-
-        // for문과 동일한 기능.
-//      List<ScheduleGetAllResponse> dtos = schedules.stream()
-//            .map(ScheduleGetAllResponse::new)
-//            .toList();
-
-        for (Schedule schedule : schedules) {
-            ScheduleGetOneResponse dto = new ScheduleGetOneResponse(
-                    schedule.getId(),
-                    schedule.getTitle(),
-                    schedule.getContent(),
-                    schedule.getUser().getId(),
-                    schedule.getCreatedAt(),
-                    schedule.getUpdatedAt()
-            );
-            dtos.add(dto);
-        }
-        return new ScheduleGetListResponse(dtos);
+    public Page<SchedulePageResponse> getAllSchedule(Pageable pageable) {
+        return scheduleRepository.findAllWithCommentCount(pageable);
     }
 
     @Transactional(readOnly = true)
