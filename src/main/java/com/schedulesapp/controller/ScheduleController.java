@@ -26,10 +26,17 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<SchedulePageResponse>> getSchedules(
+    public ResponseEntity<CustomPageResponse<SchedulePageResponse>> getSchedules(
             @PageableDefault(size = 10, sort = "updatedAt",
                     direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAllSchedule(pageable));
+        // 1. 서비스에서 기존과 똑같이 Page 객체를 받아온다.
+        Page<SchedulePageResponse> pageResult = scheduleService.getAllSchedule(pageable);
+
+        // 2. 커스텀 DTO에 담아서 포장한다.
+        CustomPageResponse<SchedulePageResponse> response = new CustomPageResponse<>(pageResult);
+
+        // 3. 반환한다.
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{scheduleId}")

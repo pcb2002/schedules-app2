@@ -1,6 +1,8 @@
 package com.schedulesapp.controller;
 
 import com.schedulesapp.dto.*;
+import com.schedulesapp.exception.CustomException;
+import com.schedulesapp.exception.ErrorCode;
 import com.schedulesapp.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -67,16 +69,24 @@ public class UserController {
     public ResponseEntity<UserUpdateResponse> updateUser(
             @PathVariable Long userId,
             @Valid @RequestBody UserUpdateRequest request,
-            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser // 1. 세션을 파라미터로 받습니다.
+            @SessionAttribute(name = "loginUser", required = false) SessionUser loginUser // 1. 세션을 파라미터로 받습니다.
     ) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(sessionUser.getId(), request));
+        if (!loginUser.getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN_PERMISSION);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(loginUser.getId(), request));
     }
 
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> delete(
             @PathVariable Long userId,
-            @Valid @RequestBody UserDeleteRequest request){
+            @Valid @RequestBody UserDeleteRequest request,
+            @SessionAttribute(name = "loginUser", required = false) SessionUser loginUser
+    ){
+        if (!loginUser.getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN_PERMISSION);
+        }
+
         userService.deleteUser(userId, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -1,7 +1,10 @@
 package com.schedulesapp.dto;
 
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
+@Getter
 public class UserCreateResponse {
     private final Long id;
     private final String username;

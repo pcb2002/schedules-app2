@@ -16,8 +16,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginCheckInterceptor)
-                // 1. 원칙: api로 시작하는 모든 요청은 일단 검문소(로그인 확인)를 거쳐라!
-                // .addPathPatterns("/api/**")
+                // 1. 원칙: 모든 요청은 일단 검문소(로그인 확인)를 거쳐라!
+                .addPathPatterns("/**")
 
                 // 2. 예외: 단, 회원가입(유저 생성)과 로그인은 검문 없이 통과시켜라! (프리패스)
                 .excludePathPatterns(

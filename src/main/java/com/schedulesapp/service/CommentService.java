@@ -32,7 +32,7 @@ public class CommentService {
     public CommentCreateResponse saveComment(Long scheduleId, Long userId, CommentCreateRequest request) {
 
         // 1. 스케줄 존재 여부 확인
-        Schedule schedule = scheduleRepository.findByIdAndUserId(scheduleId, userId).orElseThrow(
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND));
 
         // 2. 유저 존재 여부 확인 (세션에서 가져온 ID로 실제 유저 객체를 찾습니다)
